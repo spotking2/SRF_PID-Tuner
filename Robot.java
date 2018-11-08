@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-
+ 
 public class Robot extends IterativeRobot {
 	Joystick xbox;
 	
@@ -18,9 +18,12 @@ public class Robot extends IterativeRobot {
 	int selectedPID;
 	int kValue;
 	
-	boolean letUp1;
-	boolean letUp2;
-	boolean letUp3;
+	boolean letUp1;						//A
+	boolean letUp2;						//B
+	boolean letUp3;						//X
+	boolean letUp4;
+	boolean letUp5;
+	boolean letUp6;
 	
 	SendableChooser selectPID = new SendableChooser();
 	
@@ -69,17 +72,17 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void teleopPeriodic() {
-		if(xbox.getRawButton(1) && letUp1)
+		if(xbox.getRawButton(1) && letUp1) 		//A
 		{
 			pidArray[selectedPID].k[kValue] *= 2;
 			letUp1 = false;	
 		} 
-		else if(xbox.getRawButton(2) && letUp2)
+		else if(xbox.getRawButton(2) && letUp2) 	//B
 		{
 			pidArray[selectedPID].k[kValue] *= .5;
 			letUp2 = false;
 		}
-		else if(xbox.getRawButton(3) && letUp3)
+		else if(xbox.getRawButton(3) && letUp3) 	//X
 		{
 			kValue++;
 			
@@ -91,11 +94,11 @@ public class Robot extends IterativeRobot {
 	
 		
 		
-		if(!xbox.getRawButton(1))
+		if(!xbox.getRawButton(1))			//A
 			letUp1 = true;
-		else if(!xbox.getRawButton(2))
+		else if(!xbox.getRawButton(2))			//B
 			letUp2 = true;
-		else if(!xbox.getRawButton(3))
+		else if(!xbox.getRawButton(3))			//X
 			letUp3 = true;
 		
 		SmartDashboard.putNumber("P value",pidArray[selectedPID].k[1]);
