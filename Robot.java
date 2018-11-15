@@ -1,4 +1,3 @@
-
 package org.usfirst.frc.team3826.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -26,6 +25,7 @@ public class Robot extends IterativeRobot {
 	boolean letUp6;
 	
 	SendableChooser selectPID = new SendableChooser();
+	String kValueName = "P";
 	
 	public void robotInit() {
 		xbox = new Joystick(0);
@@ -48,27 +48,37 @@ public class Robot extends IterativeRobot {
 	}
 	
 	public void teleopInit() {
-		String pidName;
 		if( (int) selectPID.getSelected() == 0) {
-			pidName = "pid1";
 			selectedPID = 0;
 		} else if( (int) selectPID.getSelected() == 1) {
-			pidName = "pid2";
 			selectedPID = 1;
 		} else if( (int) selectPID.getSelected() == 2) {
-			pidName = "pid3";
 			selectedPID = 2;
 		} else {
-			pidName = "pid4";
 			selectedPID = 3;
 		}
-		SmartDashboard.putString("SelectedPID", pidName);
 		
 		kValue = 1;
 		
 		letUp1 = true;
 		letUp2 = true;
 		letUp3 = true;
+		
+		pid1.k[1] = 1;
+		pid1.k[2] = 1;
+		pid1.k[3] = 1;
+		
+		pid2.k[1] = 1;
+		pid2.k[2] = 1;
+		pid2.k[3] = 1;
+		
+		pid3.k[1] = 1;
+		pid3.k[2] = 1;
+		pid3.k[3] = 1;
+		
+		pid4.k[1] = 1;
+		pid4.k[2] = 1;
+		pid4.k[3] = 1;
 	}
 
 	public void teleopPeriodic() {
@@ -86,24 +96,33 @@ public class Robot extends IterativeRobot {
 		{
 			kValue++;
 			
-			if(kValue > 3)
+			if(kValue==1)
+				kValueName = "P";
+			else if(kValue==2)
+				kValueName = "I";
+			else if(kValue==3)
+				kValueName = "D";
+			else {
 				kValue = 1;
-			
+				kValueName = "P";
+			}
 			letUp3 = false;
+			
 		}
 	
 		
 		
 		if(!xbox.getRawButton(1))			//A
 			letUp1 = true;
-		else if(!xbox.getRawButton(2))			//B
+		if(!xbox.getRawButton(2))			//B
 			letUp2 = true;
-		else if(!xbox.getRawButton(3))			//X
+		if(!xbox.getRawButton(3))			//X
 			letUp3 = true;
 		
 		SmartDashboard.putNumber("P value",pidArray[selectedPID].k[1]);
 		SmartDashboard.putNumber("I value",pidArray[selectedPID].k[2]);
 		SmartDashboard.putNumber("D value",pidArray[selectedPID].k[3]);
+		SmartDashboard.putString("Value Being Changed", kValueName);
 	}
 
 	
