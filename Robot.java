@@ -9,13 +9,19 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Robot extends IterativeRobot {
 	Joystick xbox;
 	
-	SRF_PID pid1 = new SRF_PID();
-	SRF_PID pid2 = new SRF_PID();
-	SRF_PID pid3 = new SRF_PID();
-	SRF_PID pid4 = new SRF_PID();
+	SRF_PID pid1 = new SRF_PID(xbox);
+	SRF_PID pid2 = new SRF_PID(xbox);
+	SRF_PID pid3 = new SRF_PID(xbox);
+	SRF_PID pid4 = new SRF_PID(xbox);
 	SRF_PID[] pidArray = new SRF_PID[]{pid1,pid2,pid3,pid4};
 	int selectedPID;
+	
 	int kValue;
+	int adjustP;
+	int adjustI;
+	int adjustD;
+	boolean adjusted;
+	int[] multPID = new int[] {adjustP, adjustI, adjustD};
 	
 	boolean letUp1;						//A
 	boolean letUp2;						//B
@@ -58,59 +64,58 @@ public class Robot extends IterativeRobot {
 			selectedPID = 3;
 		}
 		
-		kValue = 1;
+		kValue = 0;
 		
 		letUp1 = true;
 		letUp2 = true;
 		letUp3 = true;
 		
-		pid1.k[1] = 1;
-		pid1.k[2] = 1;
-		pid1.k[3] = 1;
+		pid1.setPID(1,1,1,true);
+		pid2.setPID(1,1,1,true);
+		pid3.setPID(1,1,1,true);
+		pid4.setPID(1,1,1,true);
 		
-		pid2.k[1] = 1;
-		pid2.k[2] = 1;
-		pid2.k[3] = 1;
-		
-		pid3.k[1] = 1;
-		pid3.k[2] = 1;
-		pid3.k[3] = 1;
-		
-		pid4.k[1] = 1;
-		pid4.k[2] = 1;
-		pid4.k[3] = 1;
+		adjustP = 0;
+		adjustI = 0;
+		adjustD = 0;
+		adjusted = false;
 	}
 
 	public void teleopPeriodic() {
 		if(xbox.getRawButton(1) && letUp1) 		//A
 		{
-			pidArray[selectedPID].k[kValue] *= 2;
+			multPID[kValue] += 2;
 			letUp1 = false;	
 		} 
 		else if(xbox.getRawButton(2) && letUp2) 	//B
 		{
-			pidArray[selectedPID].k[kValue] *= .5;
+			multPID[kValue] += .5;
 			letUp2 = false;
 		}
 		else if(xbox.getRawButton(3) && letUp3) 	//X
 		{
 			kValue++;
 			
-			if(kValue==1)
+			if(kValue==0)
 				kValueName = "P";
-			else if(kValue==2)
+			else if(kValue==1)
 				kValueName = "I";
-			else if(kValue==3)
+			else if(kValue==2)
 				kValueName = "D";
 			else {
-				kValue = 1;
+				kValue = 0;
 				kValueName = "P";
 			}
 			letUp3 = false;
 			
 		}
 	
-		
+		if(adjusted){
+			pidArray[selectedPID].adjustMult(adjustP, adjustI, adjustD);
+			adjustP = 0;
+			adjustI = 0;
+			adjustD = 0;
+		}
 		
 		if(!xbox.getRawButton(1))			//A
 			letUp1 = true;
@@ -119,10 +124,8 @@ public class Robot extends IterativeRobot {
 		if(!xbox.getRawButton(3))			//X
 			letUp3 = true;
 		
-		SmartDashboard.putNumber("P value",pidArray[selectedPID].k[1]);
-		SmartDashboard.putNumber("I value",pidArray[selectedPID].k[2]);
-		SmartDashboard.putNumber("D value",pidArray[selectedPID].k[3]);
 		SmartDashboard.putString("Value Being Changed", kValueName);
+		pidArray[selectedPID].smartDashPrint();
 	}
 
 	
