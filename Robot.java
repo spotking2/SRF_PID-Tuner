@@ -26,9 +26,8 @@ public class Robot extends IterativeRobot {
 	boolean letUp1;						//A
 	boolean letUp2;						//B
 	boolean letUp3;						//X
-	boolean letUp4;
-	boolean letUp5;
-	boolean letUp6;
+	boolean letUp4;						//Y
+	boolean letUp7;						//Back
 	
 	SendableChooser selectPID = new SendableChooser();
 	String kValueName = "P";
@@ -69,6 +68,8 @@ public class Robot extends IterativeRobot {
 		letUp1 = true;
 		letUp2 = true;
 		letUp3 = true;
+		letUp4 = true;
+		letUp7 = true;
 		
 		pid1.setPID(1,1,1,true);
 		pid2.setPID(1,1,1,true);
@@ -84,12 +85,12 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		if(xbox.getRawButton(1) && letUp1) 		//A
 		{
-			multPID[kValue] += 2;
+			multPID[kValue] -= 1;
 			letUp1 = false;	
 		} 
 		else if(xbox.getRawButton(2) && letUp2) 	//B
 		{
-			multPID[kValue] += .5;
+			multPID[kValue] += 1;
 			letUp2 = false;
 		}
 		else if(xbox.getRawButton(3) && letUp3) 	//X
@@ -109,6 +110,15 @@ public class Robot extends IterativeRobot {
 			letUp3 = false;
 			
 		}
+		else if(xbox.getRawButton(4) && letUp4)		//Y
+		{
+			multPID[kValue] += .1;
+			letUp4 = false;
+		}
+		else if(xbox.getRawButton(7) && letUp7)		//Back
+		{
+			multPID[kValue] -= .1;
+		}
 	
 		if(adjusted){
 			pidArray[selectedPID].adjustMult(adjustP, adjustI, adjustD);
@@ -123,9 +133,15 @@ public class Robot extends IterativeRobot {
 			letUp2 = true;
 		if(!xbox.getRawButton(3))			//X
 			letUp3 = true;
+		if(!xbox.getRawButton(4))			//Y
+			letUp4 = true;
+		if(!xbox.getRawButton(7))			//Back
+			letUp7 = true;
 		
 		SmartDashboard.putString("Value Being Changed", kValueName);
-		pidArray[selectedPID].smartDashPrint();
+		SmartDashboard.putNumber("P value", k[1]);
+		SmartDashboard.putNumber("I value", k[2]);
+		SmartDashboard.putNumber("D value", k[3]);
 	}
 
 	
